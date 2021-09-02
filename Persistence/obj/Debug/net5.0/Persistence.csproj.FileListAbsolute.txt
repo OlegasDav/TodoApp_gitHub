@@ -1,0 +1,15 @@
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\Persistence.deps.json
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\Persistence.dll
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\ref\Persistence.dll
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\Persistence.pdb
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\Contracts.dll
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\bin\Debug\net5.0\Contracts.pdb
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.csproj.AssemblyReference.cache
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.AssemblyInfoInputs.cache
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.AssemblyInfo.cs
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.csproj.CoreCompileInputs.cache
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.csproj.CopyComplete
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.dll
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\ref\Persistence.dll
+C:\Users\oldav\Documents\BIT mokymai\4_NET\1_Paskaitos\Projektai\TodosApp\Persistence\obj\Debug\net5.0\Persistence.pdb
