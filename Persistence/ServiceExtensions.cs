@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Contracts.Enums;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
 using System;
@@ -16,6 +17,10 @@ namespace Persistence
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
             SqlMapper.RemoveTypeMap(typeof(Guid));
             SqlMapper.RemoveTypeMap(typeof(Guid?));
+
+            //SqlMapper.AddTypeHandler(new MySqlDifficultyTypeHandler());
+            //SqlMapper.RemoveTypeMap(typeof(Difficulty));
+            //SqlMapper.RemoveTypeMap(typeof(Difficulty?));
 
             return services
                 .AddSqlClient()
