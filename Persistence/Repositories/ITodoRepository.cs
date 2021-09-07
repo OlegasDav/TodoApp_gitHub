@@ -15,7 +15,7 @@ namespace Persistence.Repositories
 
         Task<TodoRead> GetAsync(Guid id);
 
-        Task<int> SaveOrUpdateAsync(Guid id, TodoWrite todo);
+        Task<int> SaveOrUpdateAsync(TodoWrite todo);
 
         Task<int> DeleteAsync(Guid id);
     }

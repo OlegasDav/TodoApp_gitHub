@@ -57,7 +57,7 @@ namespace RestApi.Controllers
                 IsDone = false
             };
 
-            await _todoRepository.SaveOrUpdateAsync(todo.Id, todo);
+            await _todoRepository.SaveOrUpdateAsync(todo);
 
             return CreatedAtAction("GetTodo", new { id = todo.Id }, todo.MapToTodoResponseFromTodoWrite());
         }
@@ -88,7 +88,7 @@ namespace RestApi.Controllers
                 IsDone = request.IsDone
             };
 
-            await _todoRepository.SaveOrUpdateAsync(id, UpdatedTodo);
+            await _todoRepository.SaveOrUpdateAsync(UpdatedTodo);
 
             return UpdatedTodo.MapToTodoResponseFromTodoWrite();
         }

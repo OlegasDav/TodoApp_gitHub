@@ -33,7 +33,7 @@ namespace Persistence.Repositories
             return _sqlClient.QueryFirstOrDefaultAsync<TodoRead>(sql, new { Id = id });
         }
 
-        public Task<int> SaveOrUpdateAsync(Guid id, TodoWrite todo)
+        public Task<int> SaveOrUpdateAsync(TodoWrite todo)
         {
             var sql = $"INSERT INTO {TableName} (Id, Title, Description, Difficulty, DateCreated, IsDone) VALUES(@Id, @Title, @Description, @Difficulty, @DateCreated, @IsDone)" +
                 $"ON DUPLICATE KEY UPDATE Title = @Title, Description = @Description, Difficulty = @Difficulty, IsDone = @IsDone;";
