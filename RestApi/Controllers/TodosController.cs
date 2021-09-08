@@ -38,7 +38,7 @@ namespace RestApi.Controllers
 
             if (todo is null)
             {
-                return NotFound();
+                return NotFound($"Todo item with id: {id} does not exist");
             }
 
             return todo.MapToTodoResponseFromTodoRead();
