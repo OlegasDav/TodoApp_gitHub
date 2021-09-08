@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace RestApi.Controllers
 {
+    [ApiController]
+    [Route("todos")]
     public class TodosController : ControllerBase
     {
         private readonly ITodoRepository _todoRepository;
@@ -21,7 +23,6 @@ namespace RestApi.Controllers
         }
 
         [HttpGet]
-        [Route("todos")]
         public async Task<IEnumerable<TodoResponse>> GetTodos()
         {
             var todos = await _todoRepository.GetAllAsync();
@@ -30,7 +31,7 @@ namespace RestApi.Controllers
         }
 
         [HttpGet]
-        [Route("todos/{id}")]
+        [Route("{id}")]
         public async Task<ActionResult<TodoResponse>> GetTodo(Guid id)
         {
             var todo = await _todoRepository.GetAsync(id);
@@ -44,7 +45,6 @@ namespace RestApi.Controllers
         }
 
         [HttpPost]
-        [Route("todos")]
         public async Task<ActionResult<TodoResponse>> AddTodo([FromBody] AddTodoRequest request)
         {
             var todo = new TodoWrite
@@ -63,7 +63,7 @@ namespace RestApi.Controllers
         }
 
         [HttpPut]
-        [Route("todos/{id}")]
+        [Route("{id}")]
         public async Task<ActionResult<TodoResponse>> UpdateTodo(Guid id, [FromBody] SaveOrUpdateTodoRequest request)
         {
             if (request is null)
@@ -94,7 +94,7 @@ namespace RestApi.Controllers
         }
 
         [HttpDelete]
-        [Route("todos/{id}")]
+        [Route("{id}")]
         public async Task<ActionResult> DeleteComment(Guid id)
         {
             var todoDelete = await _todoRepository.GetAsync(id);
