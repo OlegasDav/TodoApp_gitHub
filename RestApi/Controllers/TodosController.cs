@@ -59,7 +59,7 @@ namespace RestApi.Controllers
 
             await _todoRepository.SaveOrUpdateAsync(todo);
 
-            return CreatedAtAction("GetTodo", new { id = todo.Id }, todo.MapToTodoResponseFromTodoWrite());
+            return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todo.MapToTodoResponseFromTodoWrite());
         }
 
         [HttpPut]
@@ -75,7 +75,7 @@ namespace RestApi.Controllers
 
             if (todoToUpdate is null)
             {
-                return NotFound();
+                return NotFound($"Todo item with id: {id} does not exist");
             }
 
             var UpdatedTodo = new TodoWrite
@@ -84,7 +84,7 @@ namespace RestApi.Controllers
                 Title = request.Title,
                 Description = request.Description,
                 Difficulty = request.Difficulty,
-                DateCreated = DateTime.Now,
+                DateCreated = todoToUpdate.DateCreated,
                 IsDone = request.IsDone
             };
 
