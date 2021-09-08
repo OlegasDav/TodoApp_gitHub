@@ -101,7 +101,7 @@ namespace RestApi.Controllers
 
             if (todoDelete is null)
             {
-                return NotFound();
+                return NotFound($"Todo item with id: {id} does not exist");
             }
 
             await _todoRepository.DeleteAsync(id);
