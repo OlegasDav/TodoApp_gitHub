@@ -93,6 +93,37 @@ namespace RestApi.Controllers
             return UpdatedTodo.MapToTodoResponseFromTodoWrite();
         }
 
+        [HttpPut]
+        [Route("{id}/status")]
+        public async Task<ActionResult<TodoResponse>> UpdateStatus(Guid id, [FromBody] UpdateStatusRequest request)
+        {
+            if (request is null)
+            {
+                return BadRequest();
+            }
+
+            var todoToUpdate = await _todoRepository.GetAsync(id);
+
+            if (todoToUpdate is null)
+            {
+                return NotFound($"Todo item with id: {id} does not exist");
+            }
+
+            var UpdatedTodo = new TodoWrite
+            {
+                Id = id,
+                Title = todoToUpdate.Title,
+                Description = todoToUpdate.Description,
+                Difficulty = todoToUpdate.Difficulty,
+                DateCreated = todoToUpdate.DateCreated,
+                IsDone = request.IsDone
+            };
+
+            await _todoRepository.SaveOrUpdateAsync(UpdatedTodo);
+
+            return UpdatedTodo.MapToTodoResponseFromTodoWrite();
+        }
+
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult> DeleteComment(Guid id)
