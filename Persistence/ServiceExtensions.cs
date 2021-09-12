@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+
 
 namespace Persistence
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddPersistence(this IServiceCollection services)
+        public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
             SqlMapper.RemoveTypeMap(typeof(Guid));
@@ -23,7 +25,7 @@ namespace Persistence
             //SqlMapper.RemoveTypeMap(typeof(Difficulty?));
 
             return services
-                .AddSqlClient()
+                .AddSqlClient(configuration)
                 .AddRepositories();
         }
 
@@ -32,17 +34,19 @@ namespace Persistence
             return services.AddSingleton<ITodoRepository, TodoRepository>();
         }
 
-        private static IServiceCollection AddSqlClient(this IServiceCollection services)
+        private static IServiceCollection AddSqlClient(this IServiceCollection services, IConfiguration configuration)
         {
-            var fluentConnectionStringBuilder = new FluentConnectionStringBuilder();
+            //var fluentConnectionStringBuilder = new FluentConnectionStringBuilder();
 
-            var connectionString = fluentConnectionStringBuilder
-                .AddServer("localhost")
-                .AddPort(3306)
-                .AddUserId("userOleg")
-                .AddPassword("rootroot")
-                .AddDatabase("todosapp")
-                .BuildConnectionString(true);
+            //var connectionString = fluentConnectionStringBuilder
+            //    .AddServer("localhost")
+            //    .AddPort(3306)
+            //    .AddUserId("userOleg")
+            //    .AddPassword("rootroot")
+            //    .AddDatabase("todosapp")
+            //    .BuildConnectionString(true);
+
+            var connectionString = configuration.GetSection("ConnectionStrings")["SqlConnectionString"];
 
             return services.AddTransient<ISqlClient>(_ => new SqlClient(connectionString));
         }
