@@ -19,7 +19,8 @@ namespace RestApi
                 Description = todo.Description,
                 Difficulty = todo.Difficulty,
                 DateCreated = todo.DateCreated,
-                IsDone = todo.IsDone
+                IsDone = todo.IsDone,
+                UserId = todo.UserId
             };
         }
 
@@ -32,7 +33,43 @@ namespace RestApi
                 Description = todo.Description,
                 Difficulty = todo.Difficulty,
                 DateCreated = todo.DateCreated,
-                IsDone = todo.IsDone
+                IsDone = todo.IsDone,
+                UserId = todo.UserId
+            };
+        }
+
+        public static UserResponse MapToUserResponseFromUserWrite(this UserWrite user)
+        {
+            return new UserResponse
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Password = user.Password,
+                DateCreated = user.DateCreated,
+            };
+        }
+
+        public static ApiKeyResponse MapToApiKeyResponseFromApiKeyRead(this ApiKeyRead key)
+        {
+            return new ApiKeyResponse
+            {
+                Id = key.Id,
+                TokenKey = key.TokenKey,
+                UserId = key.UserId,
+                IsActive = key.IsActive,
+                DateCreated = key.DateCreated
+            };
+        }
+
+        public static ApiKeyResponse MapToApiKeyResponseFromApiKeyWrite(this ApiKeyWrite key)
+        {
+            return new ApiKeyResponse
+            {
+                Id = key.Id,
+                TokenKey = key.TokenKey,
+                UserId = key.UserId,
+                IsActive = key.IsActive,
+                DateCreated = key.DateCreated
             };
         }
     }

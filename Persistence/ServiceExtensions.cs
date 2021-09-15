@@ -31,7 +31,9 @@ namespace Persistence
 
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            return services.AddSingleton<ITodoRepository, TodoRepository>();
+            return services
+                .AddSingleton<ITodoRepository, TodoRepository>()
+                .AddSingleton<IUserRepository, UserRepository>();
         }
 
         private static IServiceCollection AddSqlClient(this IServiceCollection services, IConfiguration configuration)
@@ -43,10 +45,20 @@ namespace Persistence
             //    .AddPort(3306)
             //    .AddUserId("userOleg")
             //    .AddPassword("rootroot")
-            //    .AddDatabase("todosapp")
+            //    .AddDatabase("todoitemsapp")
             //    .BuildConnectionString(true);
 
+            //I method
             var connectionString = configuration.GetSection("ConnectionStrings")["SqlConnectionString"];
+
+            //II method
+            //var connectionString = configuration.GetSection("ConnectionStrings").GetSection("SqlConnectionString").Value;
+
+            //III method
+            //var connectionString = configuration.GetSection("ConnectionStrings:SqlConnectionString").Value;
+
+            //IV method
+            //var connectionString = configuration.GetConnectionString("SqlConnectionString");
 
             return services.AddTransient<ISqlClient>(_ => new SqlClient(connectionString));
         }
