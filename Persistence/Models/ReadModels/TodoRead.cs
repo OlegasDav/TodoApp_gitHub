@@ -20,5 +20,7 @@ namespace Persistence.Models.ReadModels
         public DateTime DateCreated { get; set; }
 
         public bool IsDone { get; set; }
+
+        public Guid UserId { get; set; }
     }
 }
