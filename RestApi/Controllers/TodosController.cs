@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Persistence.Models.WriteModels;
 using Persistence.Repositories;
+using RestApi.Attributes;
 using RestApi.Models;
 using RestApi.Models.RequestModels;
 using RestApi.Models.ResponseModels;
+using RestApi.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +19,40 @@ namespace RestApi.Controllers
     public class TodosController : ControllerBase
     {
         private readonly ITodoRepository _todoRepository;
+        private readonly AppSettings _appSettings;
 
-        public TodosController(ITodoRepository todoRepository)
+        public TodosController(ITodoRepository todoRepository, IOptions<AppSettings> appSettings)
         {
             _todoRepository = todoRepository;
+            _appSettings = appSettings.Value;
         }
 
         [HttpGet]
+        [ApiKey]
         public async Task<IEnumerable<TodoResponse>> GetTodos()
         {
-            var todos = await _todoRepository.GetAllAsync();
+            var userId = (Guid) HttpContext.Items["userId"];
+            var todos = await _todoRepository.GetAllAsync(userId);
 
             return todos.Select(todo => todo.MapToTodoResponseFromTodoRead());
         }
 
         [HttpGet]
+        [ApiKey]
         [Route("{id}")]
         public async Task<ActionResult<TodoResponse>> GetTodo(Guid id)
         {
-            var todo = await _todoRepository.GetAsync(id);
+            var releaseDate = _appSettings.RealeaseDate;
+
+            var currentDate = DateTime.Now;
+
+            if (releaseDate >= currentDate)
+            {
+                return BadRequest("Feature not released");
+            }
+
+            var userId = (Guid)HttpContext.Items["userId"];
+            var todo = await _todoRepository.GetAsync(id, userId);
 
             if (todo is null)
             {
@@ -45,8 +63,11 @@ namespace RestApi.Controllers
         }
 
         [HttpPost]
+        [ApiKey]
         public async Task<ActionResult<TodoResponse>> AddTodo([FromBody] AddTodoRequest request)
         {
+            var userId = (Guid)HttpContext.Items["userId"];
+
             var todo = new TodoWrite
             {
                 Id = Guid.NewGuid(),
@@ -54,7 +75,8 @@ namespace RestApi.Controllers
                 Description = request.Description,
                 Difficulty = request.Difficulty,
                 DateCreated = DateTime.Now,
-                IsDone = false
+                IsDone = false,
+                UserId = userId
             };
 
             await _todoRepository.SaveOrUpdateAsync(todo);
@@ -63,6 +85,7 @@ namespace RestApi.Controllers
         }
 
         [HttpPut]
+        [ApiKey]
         [Route("{id}")]
         public async Task<ActionResult<TodoResponse>> UpdateTodo(Guid id, [FromBody] SaveOrUpdateTodoRequest request)
         {
@@ -71,7 +94,8 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
 
-            var todoToUpdate = await _todoRepository.GetAsync(id);
+            var userId = (Guid)HttpContext.Items["userId"];
+            var todoToUpdate = await _todoRepository.GetAsync(id, userId);
 
             if (todoToUpdate is null)
             {
@@ -85,7 +109,8 @@ namespace RestApi.Controllers
                 Description = request.Description,
                 Difficulty = request.Difficulty,
                 DateCreated = todoToUpdate.DateCreated,
-                IsDone = request.IsDone
+                IsDone = request.IsDone,
+                UserId = todoToUpdate.UserId
             };
 
             await _todoRepository.SaveOrUpdateAsync(UpdatedTodo);
@@ -94,6 +119,7 @@ namespace RestApi.Controllers
         }
 
         [HttpPut]
+        [ApiKey]
         [Route("{id}/status")]
         public async Task<ActionResult<TodoResponse>> UpdateStatus(Guid id, [FromBody] UpdateStatusRequest request)
         {
@@ -102,7 +128,8 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
 
-            var todoToUpdate = await _todoRepository.GetAsync(id);
+            var userId = (Guid)HttpContext.Items["userId"];
+            var todoToUpdate = await _todoRepository.GetAsync(id, userId);
 
             if (todoToUpdate is null)
             {
@@ -116,7 +143,8 @@ namespace RestApi.Controllers
                 Description = todoToUpdate.Description,
                 Difficulty = todoToUpdate.Difficulty,
                 DateCreated = todoToUpdate.DateCreated,
-                IsDone = request.IsDone
+                IsDone = request.IsDone,
+                UserId = todoToUpdate.UserId
             };
 
             await _todoRepository.SaveOrUpdateAsync(UpdatedTodo);
@@ -125,10 +153,12 @@ namespace RestApi.Controllers
         }
 
         [HttpDelete]
+        [ApiKey]
         [Route("{id}")]
         public async Task<ActionResult> DeleteComment(Guid id)
         {
-            var todoDelete = await _todoRepository.GetAsync(id);
+            var userId = (Guid)HttpContext.Items["userId"];
+            var todoDelete = await _todoRepository.GetAsync(id, userId);
 
             if (todoDelete is null)
             {
