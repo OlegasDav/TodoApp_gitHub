@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using RestApi.Options;
+using RestApi.SwaggerSettings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +31,14 @@ namespace RestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
             services.AddPersistence(Configuration);
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RestApi", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "RestApi", Version = "v1" });
+                options.OperationFilter<AddHeaderParameter>();
             });
 
             services.AddCors();
