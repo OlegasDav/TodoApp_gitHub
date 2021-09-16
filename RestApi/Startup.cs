@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using Domain;
 using RestApi.Options;
 using RestApi.SwaggerSettings;
 using System;
@@ -34,6 +35,7 @@ namespace RestApi
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddPersistence(Configuration);
+            services.AddDomain();
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddSwaggerGen(options =>
             {
