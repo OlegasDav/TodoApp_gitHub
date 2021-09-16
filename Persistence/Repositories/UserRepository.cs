@@ -13,17 +13,18 @@ namespace Persistence.Repositories
         private readonly ISqlClient _sqlClient;
         private const string TableNameUser = "user";
         private const string TableNameKey = "apikey";
+        private const string TableNameToken = "usertoken";
 
         public UserRepository(ISqlClient sqlClient)
         {
             _sqlClient = sqlClient;
         }
 
-        public Task<UserRead> GetNameAsync(string username)
+        public Task<int> CheckExistAsync(string username)
         {
-            var sql = $"SELECT * FROM {TableNameUser} WHERE Username = @Username";
+            var sql = $"SELECT EXISTS(SELECT * FROM {TableNameUser} WHERE Username = @Username)";
 
-            return _sqlClient.QueryFirstOrDefaultAsync<UserRead>(sql, new { Username = username });
+            return _sqlClient.QueryFirstOrDefaultAsync<int>(sql, new { Username = username });
         }
 
         public Task<UserRead> GetNamePasswordAsync(string username, string password)
@@ -40,11 +41,11 @@ namespace Persistence.Repositories
             return _sqlClient.ExecuteAsync(sql, user);
         }
 
-        public Task<IEnumerable<ApiKeyRead>> GetUserApiKeysAsync(Guid id)
+        public Task<IEnumerable<ApiKeyRead>> GetUserApiKeysAsync(Guid userId)
         {
-            var sql = $"SELECT * FROM {TableNameKey} WHERE Id = @Id";
+            var sql = $"SELECT * FROM {TableNameKey} WHERE UserId = @UserId";
 
-            return _sqlClient.QueryAsync<ApiKeyRead>(sql, new { Id = id });
+            return _sqlClient.QueryAsync<ApiKeyRead>(sql, new { UserId = userId });
         }
 
         public Task<ApiKeyRead> GetApiKeyAsync(string key)
@@ -59,6 +60,21 @@ namespace Persistence.Repositories
             var sql = $"INSERT INTO {TableNameKey} (Id, TokenKey, UserId, IsActive, DateCreated) VALUES(@Id, @TokenKey, @UserId, @IsActive, @DateCreated)";
 
             return _sqlClient.ExecuteAsync(sql, key);
+        }
+
+        public Task<UserTokenRead> GetUserTokenAsync(string token)
+        {
+            var sql = $"SELECT * FROM {TableNameToken} WHERE Token = @Token";
+
+            return _sqlClient.QueryFirstOrDefaultAsync<UserTokenRead>(sql, new { Token = token });
+        }
+
+        public Task<int> SaveOrUpadteTokenAsync(UserTokenWrite token)
+        {
+            var sql = $"INSERT INTO {TableNameToken} (UserId, Token, ExpirationDate) VALUES(@UserId, @Token, @ExpirationDate)" +
+                $"ON DUPLICATE KEY UPDATE Token = @Token, ExpirationDate = @ExpirationDate;";
+
+            return _sqlClient.ExecuteAsync(sql, token);
         }
     }
 }

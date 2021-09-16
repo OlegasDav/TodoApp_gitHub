@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.Services;
+using Microsoft.AspNetCore.Mvc;
 using Persistence.Models.WriteModels;
 using Persistence.Repositories;
+using RestApi.Attributes;
 using RestApi.Models.RequestModels;
 using RestApi.Models.ResponseModels;
 using System;
@@ -15,19 +17,21 @@ namespace RestApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IApiKeyService _apiKeyService;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, IApiKeyService apiKeyService)
         {
             _userRepository = userRepository;
+            _apiKeyService = apiKeyService;
         }
 
         [HttpPost]
         [Route("signUp")]
         public async Task<ActionResult<UserResponse>> SignUp([FromBody] AddUserRequest request)
         {
-            var user = await _userRepository.GetNameAsync(request.Username);
+            var isExists = await _userRepository.CheckExistAsync(request.Username);
 
-            if (user is not null)
+            if (isExists == 1)
             {
                 return BadRequest($"A user with {request.Username} name already exists");
             }
@@ -46,8 +50,8 @@ namespace RestApi.Controllers
         }
 
         [HttpPost]
-        [Route("apiKey")]
-        public async Task<ActionResult<ApiKeyResponse>> CreateApiKey([FromBody] AddUserRequest request)
+        [Route("signIn")]
+        public async Task<ActionResult<UserTokenResponse>> SignIn([FromBody] AddUserRequest request)
         {
             var user = await _userRepository.GetNamePasswordAsync(request.Username, request.Password);
 
@@ -56,11 +60,36 @@ namespace RestApi.Controllers
                 return BadRequest("The username or password is incorrect");
             }
 
+            var userTokenNew = new UserTokenWrite
+            {
+                UserId = user.Id,
+                Token = Guid.NewGuid().ToString("N"),
+                ExpirationDate = DateTime.Now.AddMinutes(5)
+            };
+
+            await _userRepository.SaveOrUpadteTokenAsync(userTokenNew);
+
+            return userTokenNew.MapToUserTokenResponseFromUserTokenWrite();
+        }
+
+        [HttpPost]
+        [UserToken]
+        [Route("apiKey")]
+        public async Task<ActionResult<ApiKeyResponse>> CreateApiKey()
+        {
+            var userId = (Guid)HttpContext.Items["userId"];
+            var isReachedLimit = await _apiKeyService.CheckApiKeyLimitAsync(userId);
+
+            if (isReachedLimit)
+            {
+                return Conflict("You have exceeded the ApiKey limit");
+            }
+
             var apiKey = new ApiKeyWrite
             {
                 Id = Guid.NewGuid(),
                 TokenKey = Guid.NewGuid().ToString("N"),
-                UserId = user.Id,
+                UserId = userId,
                 IsActive = true,
                 DateCreated = DateTime.Now
             };
@@ -70,20 +99,16 @@ namespace RestApi.Controllers
             return apiKey.MapToApiKeyResponseFromApiKeyWrite();
         }
 
-        //[HttpGet]
-        //[Route("apiKey")]
-        //public async Task<ActionResult<IEnumerable<ApiKeyResponse>>> GetApiKeys([FromBody] AddUserRequest request)
-        //{
-        //    var user = await _userRepository.GetNamePasswordAsync(request.Username, request.Password);
+        [HttpGet]
+        [UserToken]
+        [Route("apiKey")]
+        public async Task<ActionResult<IEnumerable<ApiKeyResponse>>> GetApiKeys()
+        {
+            var userId = (Guid)HttpContext.Items["userId"];
 
-        //    if (user is null)
-        //    {
-        //        return BadRequest("The username or password is incorrect");
-        //    }
+            var apiKeys = await _userRepository.GetUserApiKeysAsync(userId);
 
-        //    var apiKeys = await _userRepository.GetUserApiKeysAsync(user.Id);
-
-        //    return apiKeys.Select(apiKey => apiKey.MapToApiKeyResponseFromApiKeyRead());
-        //}
+            return Ok(apiKeys.Select(apiKey => apiKey.MapToApiKeyResponseFromApiKeyRead()));
+        }
     }
 }

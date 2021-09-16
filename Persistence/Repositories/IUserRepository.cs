@@ -10,16 +10,20 @@ namespace Persistence.Repositories
 {
     public interface IUserRepository
     {
-        Task<UserRead> GetNameAsync(string username);
+        Task<int> CheckExistAsync(string username);
 
         Task<UserRead> GetNamePasswordAsync(string username, string password);
 
         Task<int> SaveUserAsync(UserWrite user);
 
-        Task<IEnumerable<ApiKeyRead>> GetUserApiKeysAsync(Guid id);
+        Task<IEnumerable<ApiKeyRead>> GetUserApiKeysAsync(Guid userId);
 
         Task<ApiKeyRead> GetApiKeyAsync(string key);
 
         Task<int> SaveApiKeyAsync(ApiKeyWrite key);
+
+        Task<UserTokenRead> GetUserTokenAsync(string token);
+
+        Task<int> SaveOrUpadteTokenAsync(UserTokenWrite token);
     }
 }

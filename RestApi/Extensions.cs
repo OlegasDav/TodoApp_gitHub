@@ -72,5 +72,13 @@ namespace RestApi
                 DateCreated = key.DateCreated
             };
         }
+
+        public static UserTokenResponse MapToUserTokenResponseFromUserTokenWrite(this UserTokenWrite token)
+        {
+            return new UserTokenResponse
+            {
+                Token = token.Token
+            };
+        }
     }
 }
