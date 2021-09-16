@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,36 @@ namespace RestApi.SwaggerSettings
             if (operation.Parameters == null)
                 operation.Parameters = new List<OpenApiParameter>();
 
-            operation.Parameters.Add(new OpenApiParameter
+            var descriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
+
+            if (descriptor != null && !descriptor.ControllerName.StartsWith("Users"))
             {
-                Name = "ApiKey",
-                In = ParameterLocation.Header,
-                Required = false,
-                Schema = new OpenApiSchema
+                operation.Parameters.Add(new OpenApiParameter
                 {
-                    Type = "String"
-                }
-            });
+                    Name = "ApiKey",
+                    In = ParameterLocation.Header,
+                    Required = false,
+                    Schema = new OpenApiSchema
+                    {
+                        Type = "String"
+                    }
+                });
+            }
+
+            if (!descriptor.ActionName.StartsWith("SignUp") && !descriptor.ActionName.StartsWith("SignIn") && descriptor != null && !descriptor.ControllerName.StartsWith("Todos"))
+            {
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = "UserToken",
+                    In = ParameterLocation.Header,
+                    Required = false,
+                    Schema = new OpenApiSchema
+                    {
+                        Type = "String"
+                    }
+                });
+            }
+
         }
     }
 }
